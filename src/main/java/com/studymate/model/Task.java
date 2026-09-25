@@ -1,6 +1,7 @@
 package com.studymate.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public abstract class task implements managable {
+public abstract class Task implements managable {
 
     protected int id;
     protected String title;
@@ -10,10 +11,10 @@ public abstract class task implements managable {
     protected String status;
     protected String subject;
 
-    public task() {
+    public Task() {
     }
 
-    public task(int id, String title, String description,
+    public Task(int id, String title, String description,
                 String deadline, String priority,
                 String status, String subject) {
 
@@ -25,7 +26,7 @@ public abstract class task implements managable {
         this.status = status;
         this.subject = subject;
     }
-
+     @JsonIgnore
     public abstract String getTaskType();
 
     @Override

@@ -1,6 +1,6 @@
 package com.studymate.model;
 
-public class AssignmentTask extends task {
+public class AssignmentTask extends Task {
 
     public AssignmentTask() {
         super();

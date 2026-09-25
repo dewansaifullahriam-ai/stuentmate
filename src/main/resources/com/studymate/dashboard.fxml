@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.studymate.controller.DashboardController"
+        style="-fx-background-color: #f4f7fb;">
+
+    <!-- ================= HEADER ================= -->
+
+    <top>
+
+        <VBox spacing="5"
+              style="-fx-background-color: linear-gradient(to right, #4f46e5, #7c3aed); -fx-padding: 22;">
+
+            <Label
+                    text="STUDYMATE"
+                    style="-fx-text-fill: white;
+                           -fx-font-size: 30px;
+                           -fx-font-weight: bold;"/>
+
+            <Label
+                    text="Study smarter • Manage tasks • Track progress"
+                    style="-fx-text-fill: #e0e7ff;
+                           -fx-font-size: 14px;"/>
+
+        </VBox>
+
+    </top>
+
+
+    <!-- ================= LEFT SIDE ================= -->
+
+    <left>
+
+        <VBox
+                spacing="12"
+                prefWidth="270"
+                style="-fx-background-color: white;
+                       -fx-padding: 20;
+                       -fx-border-color: #e5e7eb;
+                       -fx-border-width: 0 1 0 0;">
+
+            <Label
+                    text="CREATE TASK"
+                    style="-fx-font-size: 17px;
+                           -fx-font-weight: bold;
+                           -fx-text-fill: #312e81;"/>
+
+
+            <Label text="Task Title"
+                   style="-fx-font-weight: bold;"/>
+
+            <TextField
+                    fx:id="titleField"
+                    promptText="e.g. Complete DSA Assignment"
+                    style="-fx-background-radius: 8;"/>
+
+
+            <Label text="Description"
+                   style="-fx-font-weight: bold;"/>
+
+            <TextField
+                    fx:id="descriptionField"
+                    promptText="Short description"
+                    style="-fx-background-radius: 8;"/>
+
+
+            <Label text="Deadline"
+                   style="-fx-font-weight: bold;"/>
+
+            <TextField
+                    fx:id="deadlineField"
+                    promptText="YYYY-MM-DD"
+                    style="-fx-background-radius: 8;"/>
+
+
+            <Label text="Subject"
+                   style="-fx-font-weight: bold;"/>
+
+            <TextField
+                    fx:id="subjectField"
+                    promptText="e.g. CSE 2201"
+                    style="-fx-background-radius: 8;"/>
+
+
+            <Label text="Priority"
+                   style="-fx-font-weight: bold;"/>
+
+            <ComboBox
+                    fx:id="priorityBox"
+                    maxWidth="Infinity"/>
+
+
+            <Label text="Status"
+                   style="-fx-font-weight: bold;"/>
+
+            <ComboBox
+                    fx:id="statusBox"
+                    maxWidth="Infinity"/>
+
+
+            <Button
+                    text="＋  Add Task"
+                    maxWidth="Infinity"
+                    onAction="#addTask"
+                    style="-fx-background-color: #4f46e5;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;
+                           -fx-padding: 10;"/>
+
+
+            <Button
+                    text="✎  Update Task"
+                    maxWidth="Infinity"
+                    onAction="#updateTask"
+                    style="-fx-background-color: #0ea5e9;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;
+                           -fx-padding: 10;"/>
+
+
+            <Button
+                    text="✓  Mark Completed"
+                    maxWidth="Infinity"
+                    onAction="#markCompleted"
+                    style="-fx-background-color: #16a34a;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;
+                           -fx-padding: 10;"/>
+
+
+            <Button
+                    text="🗑  Delete Task"
+                    maxWidth="Infinity"
+                    onAction="#deleteTask"
+                    style="-fx-background-color: #dc2626;
+                           -fx-text-fill: white;
+                           -fx-font-weight: bold;
+                           -fx-background-radius: 8;
+                           -fx-padding: 10;"/>
+
+
+            <Button
+                    text="Clear Form"
+                    maxWidth="Infinity"
+                    onAction="#clearFields"
+                    style="-fx-background-color: #64748b;
+                           -fx-text-fill: white;
+                           -fx-background-radius: 8;"/>
+
+        </VBox>
+
+    </left>
+
+
+    <!-- ================= CENTER ================= -->
+
+    <center>
+
+        <VBox
+                spacing="15"
+                style="-fx-padding: 20;">
+
+            <!-- STATISTICS -->
+
+            <HBox spacing="12">
+
+                <VBox
+                        prefWidth="130"
+                        style="-fx-background-color: #eef2ff;
+                               -fx-background-radius: 12;
+                               -fx-padding: 15;">
+
+                    <Label
+                            text="TOTAL"
+                            style="-fx-text-fill: #6366f1;
+                                   -fx-font-weight: bold;"/>
+
+                    <Label
+                            fx:id="totalLabel"
+                            text="0"
+                            style="-fx-font-size: 26px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: #312e81;"/>
+
+                </VBox>
+
+
+                <VBox
+                        prefWidth="130"
+                        style="-fx-background-color: #dcfce7;
+                               -fx-background-radius: 12;
+                               -fx-padding: 15;">
+
+                    <Label
+                            text="COMPLETED"
+                            style="-fx-text-fill: #16a34a;
+                                   -fx-font-weight: bold;"/>
+
+                    <Label
+                            fx:id="completedLabel"
+                            text="0"
+                            style="-fx-font-size: 26px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: #166534;"/>
+
+                </VBox>
+
+
+                <VBox
+                        prefWidth="130"
+                        style="-fx-background-color: #fef3c7;
+                               -fx-background-radius: 12;
+                               -fx-padding: 15;">
+
+                    <Label
+                            text="PENDING"
+                            style="-fx-text-fill: #d97706;
+                                   -fx-font-weight: bold;"/>
+
+                    <Label
+                            fx:id="pendingLabel"
+                            text="0"
+                            style="-fx-font-size: 26px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: #92400e;"/>
+
+                </VBox>
+
+
+                <VBox
+                        prefWidth="130"
+                        style="-fx-background-color: #fee2e2;
+                               -fx-background-radius: 12;
+                               -fx-padding: 15;">
+
+                    <Label
+                            text="HIGH PRIORITY"
+                            style="-fx-text-fill: #dc2626;
+                                   -fx-font-weight: bold;"/>
+
+                    <Label
+                            fx:id="highPriorityLabel"
+                            text="0"
+                            style="-fx-font-size: 26px;
+                                   -fx-font-weight: bold;
+                                   -fx-text-fill: #991b1b;"/>
+
+                </VBox>
+
+            </HBox>
+
+
+            <!-- PROGRESS -->
+
+            <HBox
+                    spacing="10"
+                    alignment="CENTER_LEFT">
+
+                <Label
+                        text="Overall Progress"
+                        style="-fx-font-weight: bold;
+                               -fx-text-fill: #374151;"/>
+
+                <ProgressBar
+                        fx:id="progressBar"
+                        prefWidth="300"
+                        progress="0"/>
+
+                <Label
+                        fx:id="progressLabel"
+                        text="0% completed"
+                        style="-fx-font-weight: bold;
+                               -fx-text-fill: #4f46e5;"/>
+
+            </HBox>
+
+
+            <!-- SEARCH -->
+
+            <HBox spacing="10">
+
+                <TextField
+                        fx:id="searchField"
+                        promptText="🔎 Search by task or subject..."
+                        HBox.hgrow="ALWAYS"
+                        style="-fx-background-radius: 8;
+                               -fx-padding: 10;"/>
+
+
+                <ComboBox
+                        fx:id="priorityFilter"
+                        prefWidth="120"/>
+
+
+                <ComboBox
+                        fx:id="statusFilter"
+                        prefWidth="120"/>
+
+
+                <Button
+                        text="↻ Refresh"
+                        onAction="#refreshTasks"
+                        style="-fx-background-color: #6366f1;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 8;"/>
+
+            </HBox>
+
+
+            <Label
+                    text="YOUR TASKS"
+                    style="-fx-font-size: 19px;
+                           -fx-font-weight: bold;
+                           -fx-text-fill: #1e293b;"/>
+
+
+            <!-- TABLE -->
+
+            <TableView
+                    fx:id="taskTable"
+                    VBox.vgrow="ALWAYS">
+
+                <columns>
+
+                    <TableColumn
+                            fx:id="idColumn"
+                            text="ID"
+                            prefWidth="45"/>
+
+                    <TableColumn
+                            fx:id="titleColumn"
+                            text="TASK"
+                            prefWidth="180"/>
+
+                    <TableColumn
+                            fx:id="subjectColumn"
+                            text="SUBJECT"
+                            prefWidth="110"/>
+
+                    <TableColumn
+                            fx:id="deadlineColumn"
+                            text="DEADLINE"
+                            prefWidth="110"/>
+
+                    <TableColumn
+                            fx:id="priorityColumn"
+                            text="PRIORITY"
+                            prefWidth="90"/>
+
+                    <TableColumn
+                            fx:id="statusColumn"
+                            text="STATUS"
+                            prefWidth="100"/>
+
+                </columns>
+
+            </TableView>
+
+
+            <!-- JSON -->
+
+            <HBox
+                    spacing="10"
+                    alignment="CENTER_RIGHT">
+
+                <Button
+                        text="📤 Export JSON"
+                        onAction="#exportJSON"
+                        style="-fx-background-color: #7c3aed;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 8;"/>
+
+                <Button
+                        text="📥 Import JSON"
+                        onAction="#importJSON"
+                        style="-fx-background-color: #0891b2;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 8;"/>
+
+            </HBox>
+
+        </VBox>
+
+    </center>
+
+
+    <!-- ================= RIGHT SIDE ================= -->
+
+    <right>
+
+        <VBox
+                spacing="18"
+                prefWidth="260"
+                style="-fx-background-color: #ffffff;
+                       -fx-padding: 20;
+                       -fx-border-color: #e5e7eb;
+                       -fx-border-width: 0 0 0 1;">
+
+
+            <!-- TIMER -->
+
+            <VBox
+                    spacing="10"
+                    alignment="CENTER"
+                    style="-fx-background-color: #eef2ff;
+                           -fx-background-radius: 15;
+                           -fx-padding: 20;">
+
+                <Label
+                        text="FOCUS TIMER"
+                        style="-fx-font-size: 17px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: #4338ca;"/>
+
+                <Label
+                        fx:id="timerLabel"
+                        text="25:00"
+                        style="-fx-font-size: 42px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: #312e81;"/>
+
+
+                <HBox
+                        spacing="7">
+
+                    <Button
+                            text="Start"
+                            onAction="#startTimer"
+                            style="-fx-background-color: #4f46e5;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 7;"/>
+
+                    <Button
+                            text="Pause"
+                            onAction="#pauseTimer"
+                            style="-fx-background-color: #f59e0b;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 7;"/>
+
+                    <Button
+                            text="Reset"
+                            onAction="#resetTimer"
+                            style="-fx-background-color: #64748b;
+                                   -fx-text-fill: white;
+                                   -fx-background-radius: 7;"/>
+
+                </HBox>
+
+            </VBox>
+
+
+            <!-- MOTIVATION -->
+
+            <VBox
+                    spacing="10"
+                    style="-fx-background-color: #f0fdf4;
+                           -fx-background-radius: 15;
+                           -fx-padding: 18;">
+
+                <Label
+                        text="DAILY MOTIVATION"
+                        style="-fx-font-size: 16px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: #15803d;"/>
+
+                <Label
+                        fx:id="quoteLabel"
+                        text="Stay focused and keep learning!"
+                        wrapText="true"
+                        style="-fx-font-size: 14px;
+                               -fx-text-fill: #166534;"/>
+
+                <Button
+                        text="↻ Get Motivation"
+                        onAction="#loadQuote"
+                        maxWidth="Infinity"
+                        style="-fx-background-color: #16a34a;
+                               -fx-text-fill: white;
+                               -fx-background-radius: 7;"/>
+
+            </VBox>
+
+
+            <!-- QUICK INFO -->
+
+            <VBox
+                    spacing="8"
+                    style="-fx-background-color: #fff7ed;
+                           -fx-background-radius: 15;
+                           -fx-padding: 18;">
+
+                <Label
+                        text="QUICK TIPS"
+                        style="-fx-font-size: 16px;
+                               -fx-font-weight: bold;
+                               -fx-text-fill: #c2410c;"/>
+
+                <Label
+                        text="• Break large tasks into smaller tasks."
+                        wrapText="true"/>
+
+                <Label
+                        text="• Use the 25-minute focus timer."
+                        wrapText="true"/>
+
+                <Label
+                        text="• Complete high-priority tasks first."
+                        wrapText="true"/>
+
+            </VBox>
+
+
+            <VBox
+                    VBox.vgrow="ALWAYS"/>
+
+
+            <Label
+                    text="StudyMate v1.0"
+                    style="-fx-text-fill: #94a3b8;
+                           -fx-font-size: 12px;"/>
+
+        </VBox>
+
+    </right>
+
+</BorderPane>
