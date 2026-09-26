@@ -5,6 +5,7 @@ import com.studymate.model.AssignmentTask;
 import com.studymate.model.Task;
 import com.studymate.service.ApiService;
 import com.studymate.service.JsonService;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -17,12 +18,12 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.paint.Color;
 
 import java.util.List;
 
+
 public class DashboardController {
+
 
     // =========================
     // INPUT FIELDS
@@ -123,14 +124,26 @@ public class DashboardController {
     // TIMER
     // =========================
 
-    @FXML
-    private Label timerLabel;
-
-    private Thread timerThread;
-
     private volatile boolean timerRunning = false;
 
     private int remainingSeconds = 25 * 60;
+
+    // Future represents the running timer task
+    private Future<?> timerFuture;
+
+
+    // =========================
+    // THREAD POOL
+    // =========================
+
+    /*
+     * Fixed thread pool with 3 worker threads.
+     *
+     * API requests and timer tasks are submitted
+     * to this pool instead of creating new Threads.
+     */
+    private final ExecutorService threadPool =
+            Executors.newFixedThreadPool(3);
 
 
     // =========================
@@ -243,12 +256,14 @@ public class DashboardController {
                         )
         );
 
+
         titleColumn.setCellValueFactory(
                 cell ->
                         new SimpleStringProperty(
                                 cell.getValue().getTitle()
                         )
         );
+
 
         subjectColumn.setCellValueFactory(
                 cell ->
@@ -257,6 +272,7 @@ public class DashboardController {
                         )
         );
 
+
         deadlineColumn.setCellValueFactory(
                 cell ->
                         new SimpleStringProperty(
@@ -264,12 +280,14 @@ public class DashboardController {
                         )
         );
 
+
         priorityColumn.setCellValueFactory(
                 cell ->
                         new SimpleStringProperty(
                                 cell.getValue().getPriority()
                         )
         );
+
 
         statusColumn.setCellValueFactory(
                 cell ->
@@ -323,6 +341,7 @@ public class DashboardController {
 
                             return;
                         }
+
 
                         if ("Completed".equalsIgnoreCase(
                                 newTask.getStatus())) {
@@ -387,6 +406,7 @@ public class DashboardController {
         if (filteredTasks == null) {
             return;
         }
+
 
         String search =
                 searchField.getText()
@@ -887,7 +907,7 @@ public class DashboardController {
 
 
     // =========================
-    // API + THREAD
+    // API + THREAD POOL
     // =========================
 
     @FXML
@@ -898,36 +918,40 @@ public class DashboardController {
         );
 
 
-        Thread apiThread =
-                new Thread(() -> {
+        /*
+         * Submit API task to thread pool.
+         *
+         * This runs in a background worker thread
+         * instead of blocking the JavaFX UI thread.
+         */
+        threadPool.submit(() -> {
 
-                    try {
+            try {
 
-                        String quote =
-                                apiService.getStudyQuote();
-
-
-                        Platform.runLater(() ->
-                                quoteLabel.setText(
-                                        "\"" + quote + "\""
-                                )
-                        );
+                String quote =
+                        apiService.getStudyQuote();
 
 
-                    } catch (Exception e) {
+                /*
+                 * JavaFX UI must be updated
+                 * using Platform.runLater().
+                 */
+                Platform.runLater(() ->
+                        quoteLabel.setText(
+                                "\"" + quote + "\""
+                        )
+                );
 
-                        Platform.runLater(() ->
-                                quoteLabel.setText(
-                                        "Unable to load quote."
-                                )
-                        );
-                    }
-                });
 
+            } catch (Exception e) {
 
-        apiThread.setDaemon(true);
-
-        apiThread.start();
+                Platform.runLater(() ->
+                        quoteLabel.setText(
+                                "Unable to load quote."
+                        )
+                );
+            }
+        });
     }
 
 
@@ -946,8 +970,11 @@ public class DashboardController {
         timerRunning = true;
 
 
-        timerThread =
-                new Thread(() -> {
+        /*
+         * Submit timer task to thread pool.
+         */
+        timerFuture =
+                threadPool.submit(() -> {
 
                     while (
                             timerRunning
@@ -962,6 +989,10 @@ public class DashboardController {
                             remainingSeconds--;
 
 
+                            /*
+                             * Update JavaFX UI
+                             * safely on JavaFX thread.
+                             */
                             Platform.runLater(
                                     this::updateTimerLabel
                             );
@@ -992,32 +1023,60 @@ public class DashboardController {
                     }
 
                 });
-
-
-        timerThread.setDaemon(true);
-
-        timerThread.start();
     }
 
+
+    // =========================
+    // PAUSE TIMER
+    // =========================
 
     @FXML
     private void pauseTimer() {
 
         timerRunning = false;
+
+
+        /*
+         * Cancel the submitted timer task.
+         */
+        if (timerFuture != null) {
+
+            timerFuture.cancel(true);
+
+            timerFuture = null;
+        }
     }
 
+
+    // =========================
+    // RESET TIMER
+    // =========================
 
     @FXML
     private void resetTimer() {
 
         timerRunning = false;
 
+
+        if (timerFuture != null) {
+
+            timerFuture.cancel(true);
+
+            timerFuture = null;
+        }
+
+
         remainingSeconds =
                 25 * 60;
+
 
         updateTimerLabel();
     }
 
+
+    // =========================
+    // UPDATE TIMER LABEL
+    // =========================
 
     private void updateTimerLabel() {
 
@@ -1028,7 +1087,7 @@ public class DashboardController {
                 remainingSeconds % 60;
 
 
-        timerLabel.setText(
+        totalLabel.setText(
                 String.format(
                         "%02d:%02d",
                         minutes,
@@ -1067,6 +1126,19 @@ public class DashboardController {
         statusBox.setValue(
                 task.getStatus()
         );
+    }
+
+
+    // =========================
+    // SHUTDOWN THREAD POOL
+    // =========================
+
+    public void shutdownThreadPool() {
+
+        /*
+         * Stop accepting new tasks.
+         */
+        threadPool.shutdown();
     }
 
 
